@@ -10,33 +10,173 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as PeoplesChoiceRouteImport } from './routes/peoples-choice'
+import { Route as RankingsRouteImport } from './routes/rankings'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedBecomeOrganizerRouteImport } from './routes/_authenticated/become-organizer'
+import { Route as AuthenticatedOrganizerRouteImport } from './routes/_authenticated/organizer'
+import { Route as CompetitionsIndexRouteImport } from './routes/competitions.index'
+import { Route as CompetitionsSlugRouteImport } from './routes/competitions.$slug'
+import { Route as ContestantsIdRouteImport } from './routes/contestants.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PeoplesChoiceRoute = PeoplesChoiceRouteImport.update({
+  id: '/peoples-choice',
+  path: '/peoples-choice',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RankingsRoute = RankingsRouteImport.update({
+  id: '/rankings',
+  path: '/rankings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedBecomeOrganizerRoute =
+  AuthenticatedBecomeOrganizerRouteImport.update({
+    id: '/become-organizer',
+    path: '/become-organizer',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOrganizerRoute = AuthenticatedOrganizerRouteImport.update({
+  id: '/organizer',
+  path: '/organizer',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const CompetitionsIndexRoute = CompetitionsIndexRouteImport.update({
+  id: '/competitions/',
+  path: '/competitions/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompetitionsSlugRoute = CompetitionsSlugRouteImport.update({
+  id: '/competitions/$slug',
+  path: '/competitions/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContestantsIdRoute = ContestantsIdRouteImport.update({
+  id: '/contestants/$id',
+  path: '/contestants/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/peoples-choice': typeof PeoplesChoiceRoute
+  '/rankings': typeof RankingsRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/become-organizer': typeof AuthenticatedBecomeOrganizerRoute
+  '/organizer': typeof AuthenticatedOrganizerRoute
+  '/competitions/$slug': typeof CompetitionsSlugRoute
+  '/contestants/$id': typeof ContestantsIdRoute
+  '/competitions/': typeof CompetitionsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/peoples-choice': typeof PeoplesChoiceRoute
+  '/rankings': typeof RankingsRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/become-organizer': typeof AuthenticatedBecomeOrganizerRoute
+  '/organizer': typeof AuthenticatedOrganizerRoute
+  '/competitions/$slug': typeof CompetitionsSlugRoute
+  '/contestants/$id': typeof ContestantsIdRoute
+  '/competitions': typeof CompetitionsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/peoples-choice': typeof PeoplesChoiceRoute
+  '/rankings': typeof RankingsRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/become-organizer': typeof AuthenticatedBecomeOrganizerRoute
+  '/_authenticated/organizer': typeof AuthenticatedOrganizerRoute
+  '/competitions/$slug': typeof CompetitionsSlugRoute
+  '/contestants/$id': typeof ContestantsIdRoute
+  '/competitions/': typeof CompetitionsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/peoples-choice'
+    | '/rankings'
+    | '/reset-password'
+    | '/admin'
+    | '/become-organizer'
+    | '/organizer'
+    | '/competitions/$slug'
+    | '/contestants/$id'
+    | '/competitions/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/peoples-choice'
+    | '/rankings'
+    | '/reset-password'
+    | '/admin'
+    | '/become-organizer'
+    | '/organizer'
+    | '/competitions/$slug'
+    | '/contestants/$id'
+    | '/competitions'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/peoples-choice'
+    | '/rankings'
+    | '/reset-password'
+    | '/_authenticated/admin'
+    | '/_authenticated/become-organizer'
+    | '/_authenticated/organizer'
+    | '/competitions/$slug'
+    | '/contestants/$id'
+    | '/competitions/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  PeoplesChoiceRoute: typeof PeoplesChoiceRoute
+  RankingsRoute: typeof RankingsRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
+  CompetitionsSlugRoute: typeof CompetitionsSlugRoute
+  ContestantsIdRoute: typeof ContestantsIdRoute
+  CompetitionsIndexRoute: typeof CompetitionsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +188,111 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/peoples-choice': {
+      id: '/peoples-choice'
+      path: '/peoples-choice'
+      fullPath: '/peoples-choice'
+      preLoaderRoute: typeof PeoplesChoiceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rankings': {
+      id: '/rankings'
+      path: '/rankings'
+      fullPath: '/rankings'
+      preLoaderRoute: typeof RankingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/become-organizer': {
+      id: '/_authenticated/become-organizer'
+      path: '/become-organizer'
+      fullPath: '/become-organizer'
+      preLoaderRoute: typeof AuthenticatedBecomeOrganizerRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/organizer': {
+      id: '/_authenticated/organizer'
+      path: '/organizer'
+      fullPath: '/organizer'
+      preLoaderRoute: typeof AuthenticatedOrganizerRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/competitions/': {
+      id: '/competitions/'
+      path: '/competitions'
+      fullPath: '/competitions/'
+      preLoaderRoute: typeof CompetitionsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/competitions/$slug': {
+      id: '/competitions/$slug'
+      path: '/competitions/$slug'
+      fullPath: '/competitions/$slug'
+      preLoaderRoute: typeof CompetitionsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contestants/$id': {
+      id: '/contestants/$id'
+      path: '/contestants/$id'
+      fullPath: '/contestants/$id'
+      preLoaderRoute: typeof ContestantsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedBecomeOrganizerRoute: typeof AuthenticatedBecomeOrganizerRoute
+  AuthenticatedOrganizerRoute: typeof AuthenticatedOrganizerRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedBecomeOrganizerRoute: AuthenticatedBecomeOrganizerRoute,
+  AuthenticatedOrganizerRoute: AuthenticatedOrganizerRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  PeoplesChoiceRoute: PeoplesChoiceRoute,
+  RankingsRoute: RankingsRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
+  CompetitionsSlugRoute: CompetitionsSlugRoute,
+  ContestantsIdRoute: ContestantsIdRoute,
+  CompetitionsIndexRoute: CompetitionsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
