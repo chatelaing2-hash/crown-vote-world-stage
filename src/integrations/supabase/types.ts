@@ -14,16 +14,257 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      competitions: {
+        Row: {
+          category: Database["public"]["Enums"]["pageant_category"]
+          cover_url: string | null
+          created_at: string
+          description: string | null
+          edition: string | null
+          id: string
+          organizer_id: string | null
+          published: boolean
+          slug: string
+          title: string
+          voting_ends_at: string | null
+          voting_open: boolean
+          voting_starts_at: string | null
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["pageant_category"]
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          edition?: string | null
+          id?: string
+          organizer_id?: string | null
+          published?: boolean
+          slug: string
+          title: string
+          voting_ends_at?: string | null
+          voting_open?: boolean
+          voting_starts_at?: string | null
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["pageant_category"]
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          edition?: string | null
+          id?: string
+          organizer_id?: string | null
+          published?: boolean
+          slug?: string
+          title?: string
+          voting_ends_at?: string | null
+          voting_open?: boolean
+          voting_starts_at?: string | null
+        }
+        Relationships: []
+      }
+      contestants: {
+        Row: {
+          age: number | null
+          bio: string | null
+          competition_id: string
+          country: string
+          country_code: string
+          created_at: string
+          height: string | null
+          id: string
+          name: string
+          photo_url: string | null
+        }
+        Insert: {
+          age?: number | null
+          bio?: string | null
+          competition_id: string
+          country: string
+          country_code: string
+          created_at?: string
+          height?: string | null
+          id?: string
+          name: string
+          photo_url?: string | null
+        }
+        Update: {
+          age?: number | null
+          bio?: string | null
+          competition_id?: string
+          country?: string
+          country_code?: string
+          created_at?: string
+          height?: string | null
+          id?: string
+          name?: string
+          photo_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contestants_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizer_applications: {
+        Row: {
+          country: string | null
+          created_at: string
+          id: string
+          message: string | null
+          organization_name: string
+          status: Database["public"]["Enums"]["application_status"]
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          id?: string
+          message?: string | null
+          organization_name: string
+          status?: Database["public"]["Enums"]["application_status"]
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          id?: string
+          message?: string | null
+          organization_name?: string
+          status?: Database["public"]["Enums"]["application_status"]
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          email: string | null
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      votes: {
+        Row: {
+          competition_id: string
+          contestant_id: string
+          created_at: string
+          id: string
+          user_id: string
+          vote_date: string
+        }
+        Insert: {
+          competition_id: string
+          contestant_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+          vote_date?: string
+        }
+        Update: {
+          competition_id?: string
+          contestant_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+          vote_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "votes_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "votes_contestant_id_fkey"
+            columns: ["contestant_id"]
+            isOneToOne: false
+            referencedRelation: "contestants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      all_results: {
+        Args: never
+        Returns: {
+          competition_id: string
+          contestant_id: string
+          votes: number
+        }[]
+      }
+      can_manage_competition: {
+        Args: { _competition_id: string }
+        Returns: boolean
+      }
+      cast_vote: { Args: { _contestant_id: string }; Returns: undefined }
+      competition_results: {
+        Args: { _competition_id: string }
+        Returns: {
+          contestant_id: string
+          votes: number
+        }[]
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_voting_live: { Args: { _competition_id: string }; Returns: boolean }
+      review_organizer: {
+        Args: { _application_id: string; _approve: boolean }
+        Returns: undefined
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "super_admin" | "organizer" | "user"
+      application_status: "pending" | "approved" | "rejected"
+      pageant_category: "miss" | "mister"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +391,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["super_admin", "organizer", "user"],
+      application_status: ["pending", "approved", "rejected"],
+      pageant_category: ["miss", "mister"],
+    },
   },
 } as const
