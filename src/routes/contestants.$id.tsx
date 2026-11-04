@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Flag } from "@/components/ContestantCard";
+import { Flag, PhotoUploadButton, pad } from "@/components/ContestantCard";
+import { useAuth } from "@/lib/auth";
 import { useVote } from "@/hooks/use-vote";
 import { supabase } from "@/integrations/supabase/client";
 import { votingStatus } from "@/lib/pageant";
@@ -21,6 +22,7 @@ export const Route = createFileRoute("/contestants/$id")({
 function ContestantPage() {
   const { id } = Route.useParams();
   const vote = useVote();
+  const { isOrganizer } = useAuth();
   const { data, isLoading } = useQuery({
     queryKey: ["contestant", id],
     queryFn: async () => {
@@ -47,11 +49,13 @@ function ContestantPage() {
   return (
     <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 md:grid-cols-2">
       <div className="overflow-hidden border border-border shadow-gold">
-        {data.photo_url && <img src={data.photo_url} alt={data.name} className="aspect-[3/4] w-full object-cover" />}
+        {data.photo_url ? <img src={data.photo_url} alt={data.name} className="aspect-[3/4] w-full object-cover" /> : <div className="flex aspect-[3/4] w-full items-center justify-center bg-muted"><span className="eyebrow">Photo coming soon</span></div>}
+        {isOrganizer && <div className="p-3"><PhotoUploadButton c={data} /></div>}
       </div>
       <div className="flex flex-col justify-center">
         {comp && <Link to="/competitions/$slug" params={{ slug: comp.slug }} className="eyebrow">{comp.title} {comp.edition}</Link>}
-        <h1 className="mt-3 text-4xl text-gold md:text-5xl">{data.name}</h1>
+        {data.position && <p className="mt-3 font-display text-primary">No. {pad(data.position)}</p>}
+        <h1 className="mt-1 text-4xl text-gold md:text-5xl">{data.name}</h1>
         <div className="mt-4 flex items-center gap-3">
           <Flag code={data.country_code} className="h-6 w-9" />
           <span className="text-lg">{data.country}</span>

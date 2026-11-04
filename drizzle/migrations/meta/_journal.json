@@ -8,6 +8,13 @@
       "when": 1793728453707,
       "tag": "0000_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793794074903,
+      "tag": "0001_contestant_position_and_photo_policies",
+      "breakpoints": true
     }
   ]
 }

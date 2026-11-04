@@ -33,7 +33,7 @@ export async function fetchCompetitionBySlug(slug: string) {
 }
 
 export async function fetchContestants(competitionId?: string) {
-  let q = supabase.from("contestants").select("*").order("name");
+  let q = supabase.from("contestants").select("*").order("position", { nullsFirst: false }).order("name");
   if (competitionId) q = q.eq("competition_id", competitionId);
   const { data, error } = await q;
   if (error) throw error;
