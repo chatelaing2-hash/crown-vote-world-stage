@@ -61,7 +61,7 @@ function NewCompetition({ onDone }: { onDone: () => void }) {
     e.preventDefault();
     const slug = `${f.title}-${f.edition}`.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") + "-" + Math.random().toString(36).slice(2, 6);
     const { error } = await supabase.from("competitions").insert({ ...f, slug, organizer_id: user!.id, cover_url: f.cover_url || null });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Competition created");
     setOpen(false);
     onDone();
@@ -103,21 +103,21 @@ function CompetitionRow({ c, onChange }: { c: Competition; onChange: () => void 
 
   const update = async (patch: Partial<Competition>, msg: string) => {
     const { error } = await supabase.from("competitions").update(patch).eq("id", c.id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(msg);
     onChange();
   };
   const del = async () => {
     if (!confirm(`Delete "${c.title}" and all its contestants and votes?`)) return;
     const { error } = await supabase.from("competitions").delete().eq("id", c.id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Deleted");
     onChange();
   };
   const delContestant = async (id: string) => {
     if (!confirm("Remove this contestant?")) return;
     const { error } = await supabase.from("contestants").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     qc.invalidateQueries({ queryKey: ["contestants"] });
   };
 
@@ -172,7 +172,7 @@ function NewContestant({ competitionId, nextPosition }: { competitionId: string;
     let photo = f.photo_url || null;
     if (file) {
       try { photo = await uploadPhoto(competitionId, file); }
-      catch (err) { setBusy(false); return toast.error((err as Error).message); }
+      catch (err) { setBusy(false); { toast.error((err as Error).message); return; } }
     }
     const { error } = await supabase.from("contestants").insert({
       competition_id: competitionId,
@@ -186,7 +186,7 @@ function NewContestant({ competitionId, nextPosition }: { competitionId: string;
       photo_url: photo,
     });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Contestant added");
     setF(empty); setFile(null); setOpen(false);
     qc.invalidateQueries({ queryKey: ["contestants"] });
@@ -220,7 +220,7 @@ function ContestantRow({ p, votes, onDelete }: { p: Contestant; votes: number; o
   const [f, setF] = useState({ name: p.name, country: p.country, country_code: p.country_code });
   const save = async () => {
     const { error } = await supabase.from("contestants").update({ ...f, country_code: f.country_code.toLowerCase() }).eq("id", p.id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Contestant updated");
     setEdit(false);
     qc.invalidateQueries({ queryKey: ["contestants"] });

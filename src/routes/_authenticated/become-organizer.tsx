@@ -34,7 +34,7 @@ function BecomeOrganizer() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const { error } = await supabase.from("organizer_applications").insert({ ...form, user_id: user!.id });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Application submitted!");
     qc.invalidateQueries({ queryKey: ["my-application"] });
   };

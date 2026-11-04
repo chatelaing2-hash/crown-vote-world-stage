@@ -78,7 +78,7 @@ function Applications() {
   });
   const review = async (id: string, approve: boolean) => {
     const { error } = await supabase.rpc("review_organizer", { _application_id: id, _approve: approve });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(approve ? "Organizer approved" : "Application rejected");
     qc.invalidateQueries({ queryKey: ["applications"] });
     qc.invalidateQueries({ queryKey: ["admin-users"] });
@@ -119,7 +119,7 @@ function Users() {
     const { error } = has
       ? await supabase.from("user_roles").delete().eq("user_id", uid).eq("role", role)
       : await supabase.from("user_roles").insert({ user_id: uid, role });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Roles updated");
     qc.invalidateQueries({ queryKey: ["admin-users"] });
   };
