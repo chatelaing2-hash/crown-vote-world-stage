@@ -74,6 +74,7 @@ export type Database = {
           id: string
           name: string
           photo_url: string | null
+          position: number | null
         }
         Insert: {
           age?: number | null
@@ -86,6 +87,7 @@ export type Database = {
           id?: string
           name: string
           photo_url?: string | null
+          position?: number | null
         }
         Update: {
           age?: number | null
@@ -98,6 +100,7 @@ export type Database = {
           id?: string
           name?: string
           photo_url?: string | null
+          position?: number | null
         }
         Relationships: [
           {
