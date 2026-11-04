@@ -9,7 +9,9 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Flag } from "@/components/ContestantCard";
+import { Flag, PhotoUploadButton, pad } from "@/components/ContestantCard";
+import { uploadPhoto } from "@/lib/photos";
+import type { Contestant } from "@/lib/pageant";
 import { StatusBadge } from "@/components/CompetitionCard";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -95,7 +97,7 @@ function CompetitionRow({ c, onChange }: { c: Competition; onChange: () => void 
   const [ends, setEnds] = useState(toLocal(c.voting_ends_at));
   const { data: contestants = [] } = useQuery({
     queryKey: ["contestants", c.id],
-    queryFn: async () => (await supabase.from("contestants").select("*").eq("competition_id", c.id).order("name")).data ?? [],
+    queryFn: async () => (await supabase.from("contestants").select("*").eq("competition_id", c.id).order("position", { nullsFirst: false }).order("name")).data ?? [],
   });
   const { data: votes = {} } = useQuery({ queryKey: ["results", "all"], queryFn: fetchAllResults, refetchInterval: 10000 });
 
@@ -145,17 +147,11 @@ function CompetitionRow({ c, onChange }: { c: Competition; onChange: () => void 
       <div className="mt-5 border-t border-border pt-5">
         <div className="mb-3 flex items-center justify-between">
           <h4 className="text-sm uppercase tracking-widest">Contestants ({contestants.length})</h4>
-          <NewContestant competitionId={c.id} />
+          <NewContestant competitionId={c.id} nextPosition={Math.max(0, ...contestants.map((x) => x.position ?? 0)) + 1} />
         </div>
         <ul className="divide-y divide-border">
           {contestants.map((p) => (
-            <li key={p.id} className="flex items-center gap-3 py-2 text-sm">
-              {p.photo_url && <img src={p.photo_url} alt={p.name} className="h-9 w-9 rounded-full object-cover" />}
-              <Flag code={p.country_code} />
-              <span className="flex-1">{p.name} <span className="text-muted-foreground">· {p.country}</span></span>
-              <span className="text-primary">{votes[p.id] ?? 0} votes</span>
-              <Button size="icon" variant="ghost" onClick={() => delContestant(p.id)} aria-label="Remove"><Trash2 /></Button>
-            </li>
+            <ContestantRow key={p.id} p={p} votes={votes[p.id] ?? 0} onDelete={() => delContestant(p.id)} />
           ))}
         </ul>
       </div>
@@ -163,7 +159,7 @@ function CompetitionRow({ c, onChange }: { c: Competition; onChange: () => void 
   );
 }
 
-function NewContestant({ competitionId }: { competitionId: string }) {
+function NewContestant({ competitionId, nextPosition }: { competitionId: string; nextPosition: number }) {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -175,13 +171,12 @@ function NewContestant({ competitionId }: { competitionId: string }) {
     setBusy(true);
     let photo = f.photo_url || null;
     if (file) {
-      const path = `${competitionId}/${crypto.randomUUID()}-${file.name.replace(/[^a-zA-Z0-9.]/g, "")}`;
-      const { error: upErr } = await supabase.storage.from("contestant-photos").upload(path, file);
-      if (upErr) { setBusy(false); return toast.error(upErr.message); }
-      photo = supabase.storage.from("contestant-photos").getPublicUrl(path).data.publicUrl;
+      try { photo = await uploadPhoto(competitionId, file); }
+      catch (err) { setBusy(false); return toast.error((err as Error).message); }
     }
     const { error } = await supabase.from("contestants").insert({
       competition_id: competitionId,
+      position: nextPosition,
       name: f.name,
       country: f.country,
       country_code: f.country_code.toLowerCase(),
@@ -216,5 +211,40 @@ function NewContestant({ competitionId }: { competitionId: string }) {
         </form>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function ContestantRow({ p, votes, onDelete }: { p: Contestant; votes: number; onDelete: () => void }) {
+  const qc = useQueryClient();
+  const [edit, setEdit] = useState(false);
+  const [f, setF] = useState({ name: p.name, country: p.country, country_code: p.country_code });
+  const save = async () => {
+    const { error } = await supabase.from("contestants").update({ ...f, country_code: f.country_code.toLowerCase() }).eq("id", p.id);
+    if (error) return toast.error(error.message);
+    toast.success("Contestant updated");
+    setEdit(false);
+    qc.invalidateQueries({ queryKey: ["contestants"] });
+  };
+  return (
+    <li className="flex flex-wrap items-center gap-3 py-3 text-sm">
+      <span className="w-6 font-display text-primary">{pad(p.position)}</span>
+      {p.photo_url ? <img src={p.photo_url} alt={p.name} className="h-12 w-9 object-cover" /> : <div className="h-12 w-9 border border-dashed border-primary/50" />}
+      <Flag code={p.country_code} />
+      {edit ? (
+        <div className="flex flex-1 flex-wrap gap-2">
+          <Input className="h-8 min-w-40 flex-1" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} />
+          <Input className="h-8 w-32" value={f.country} onChange={(e) => setF({ ...f, country: e.target.value })} />
+          <Input className="h-8 w-16" maxLength={2} value={f.country_code} onChange={(e) => setF({ ...f, country_code: e.target.value })} />
+          <Button size="sm" variant="gold" onClick={save}>Save</Button>
+          <Button size="sm" variant="ghost" onClick={() => setEdit(false)}>Cancel</Button>
+        </div>
+      ) : (
+        <span className="min-w-40 flex-1">{p.name} <span className="text-muted-foreground">· {p.country}</span></span>
+      )}
+      <span className="text-primary">{votes} votes</span>
+      <PhotoUploadButton c={p} />
+      {!edit && <Button size="sm" variant="ghost" onClick={() => setEdit(true)}>Edit</Button>}
+      <Button size="icon" variant="ghost" onClick={onDelete} aria-label="Remove"><Trash2 /></Button>
+    </li>
   );
 }
