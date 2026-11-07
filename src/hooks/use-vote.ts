@@ -12,7 +12,11 @@ export function useVote() {
     mutationFn: async (contestantId: string) => {
       if (!user) {
         navigate({ to: "/auth" });
-        throw new Error("Please sign in to vote");
+        throw new Error("Please sign in with Google to vote");
+      }
+      const providers = (user.app_metadata?.["providers"] as string[] | undefined) ?? [user.app_metadata?.["provider"]];
+      if (!providers.includes("google")) {
+        throw new Error("Voting requires a Google account. Please sign out and sign in with Google.");
       }
       const { error } = await supabase.rpc("cast_vote", { _contestant_id: contestantId });
       if (error) throw new Error(error.message);

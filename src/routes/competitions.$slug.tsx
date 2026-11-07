@@ -31,7 +31,7 @@ function CompetitionPage() {
   const { data: votes = {} } = useQuery({
     queryKey: ["results", comp?.id],
     enabled: !!comp,
-    refetchInterval: 5000,
+    refetchInterval: 3000,
     queryFn: async () => {
       const { data, error } = await supabase.rpc("competition_results", { _competition_id: comp!.id });
       if (error) throw error;
@@ -58,7 +58,7 @@ function CompetitionPage() {
         {comp.voting_ends_at && live && (
           <p className="mt-3 text-sm text-primary">Voting ends {new Date(comp.voting_ends_at).toLocaleString()}</p>
         )}
-        <p className="mt-2 text-xs text-muted-foreground">One vote per competition per day. Sign in required.</p>
+        <p className="mt-2 text-xs text-muted-foreground">Unlimited free voting — vote as often as you like. Google sign-in required.</p>
       </div>
 
       <div className="mt-12 grid gap-10 lg:grid-cols-[1fr_340px]">

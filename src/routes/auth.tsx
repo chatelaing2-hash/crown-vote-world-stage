@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
+import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/auth")({
@@ -62,10 +62,6 @@ function AuthPage() {
     }
   };
 
-  const google = async () => {
-    const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    if (r.error) toast.error(r.error.message ?? "Google sign-in failed");
-  };
 
   return (
     <div className="flex min-h-[80vh] items-center justify-center px-4 py-12">
@@ -76,7 +72,8 @@ function AuthPage() {
         </h1>
         {mode !== "forgot" && (
           <>
-            <Button variant="goldOutline" className="mt-8 w-full" onClick={google}>Continue with Google</Button>
+            <GoogleSignInButton className="mt-8 w-full" />
+            <p className="mt-2 text-center text-xs text-primary">Voting requires a Google account.</p>
             <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground"><span className="h-px flex-1 bg-border" />OR<span className="h-px flex-1 bg-border" /></div>
           </>
         )}

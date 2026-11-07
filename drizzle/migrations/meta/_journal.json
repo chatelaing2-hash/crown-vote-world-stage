@@ -15,6 +15,13 @@
       "when": 1793794074903,
       "tag": "0001_contestant_position_and_photo_policies",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794073026583,
+      "tag": "0002_unlimited_google_votes",
+      "breakpoints": true
     }
   ]
 }

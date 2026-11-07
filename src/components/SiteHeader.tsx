@@ -4,6 +4,7 @@ import { Crown, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
+import { AccountBadge, GoogleSignInButton } from "@/components/GoogleSignInButton";
 
 const links = [
   { to: "/competitions", label: "Competitions" },
@@ -55,10 +56,14 @@ export function SiteHeader() {
               {!isOrganizer && (
                 <Button asChild variant="ghost" size="sm"><Link to="/become-organizer">Become Organizer</Link></Button>
               )}
+              <div className="max-w-[180px]"><AccountBadge user={user} /></div>
               <Button variant="goldOutline" size="sm" onClick={signOut}>Sign out</Button>
             </>
           ) : (
-            <Button asChild variant="gold" size="sm"><Link to="/auth">Sign in</Link></Button>
+            <>
+              <GoogleSignInButton label="Sign in with Google" />
+              <Button asChild variant="ghost" size="sm"><Link to="/auth">Other options</Link></Button>
+            </>
           )}
         </div>
         <button className="lg:hidden text-primary" onClick={() => setOpen(!open)} aria-label="Menu">
@@ -71,10 +76,14 @@ export function SiteHeader() {
           {user ? (
             <>
               {!isOrganizer && <Link to="/become-organizer" onClick={() => setOpen(false)} className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Become Organizer</Link>}
+              <AccountBadge user={user} />
               <Button variant="goldOutline" onClick={signOut}>Sign out</Button>
             </>
           ) : (
-            <Button asChild variant="gold"><Link to="/auth" onClick={() => setOpen(false)}>Sign in</Link></Button>
+            <>
+              <GoogleSignInButton label="Sign in with Google" className="w-full" />
+              <Link to="/auth" onClick={() => setOpen(false)} className="text-center text-xs text-muted-foreground">Other sign-in options</Link>
+            </>
           )}
         </div>
       )}
